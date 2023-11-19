@@ -109,7 +109,7 @@ ECPoint scalar_mult(const BIGNUM * k, const ECPoint &a) {
     return result;
 }
 std::string EC_point_to_string (ECPoint point) {
-    return std::string(BN_bn2dec(point.X)) + ',' + std::string(BN_bn2dec(point.X)) ;
+    return std::string(BN_bn2dec(point.X)) + ',' + std::string(BN_bn2dec(point.Y)) ;
 }
 
 ECPoint string_to_EC_point(const std::string &s) {
@@ -121,9 +121,8 @@ ECPoint string_to_EC_point(const std::string &s) {
     std::string x_str = s.substr(0, pos);
     std::string y_str = s.substr(pos + 1);
 
-    BN_hex2bn(&result.X, x_str.c_str());
-    BN_hex2bn(&result.Y, y_str.c_str());
-    std::cout<<y_str;
+    BN_dec2bn(&result.X, x_str.c_str());
+    BN_dec2bn(&result.Y, y_str.c_str());
     return result;
 }
 
@@ -139,10 +138,11 @@ int main() {
     BN_set_word(k,15);
     BN_set_word(d,15);
     ECPoint * G = base_point_get();
-    ECPoint H1 = scalar_mult(d, *G);
-    print_EC_point(*G);
-    ECPoint H2 = scalar_mult(k, H1);
-    ECPoint H3 = scalar_mult(k, *G);
-    ECPoint H4 = scalar_mult(d, H3);
+    if(G) {
+        ECPoint H1 = scalar_mult(d, *G);
+        ECPoint H2 = scalar_mult(k, H1);
+        ECPoint H3 = scalar_mult(k, *G);
+        ECPoint H4 = scalar_mult(d, H3);
+    }
     return 0;
 }
