@@ -30,14 +30,14 @@ ECPoint * base_point_get() {
         BN_free(y);
         return nullptr;
     }
-    return new ECPoint{X: x, Y: y};
+    return new ECPoint{.X =  x, .Y =  y};
 }
 
 bool is_on_curve_check(const ECPoint &P) {
     EC_POINT *point = EC_POINT_new(GROUP);
-    EC_POINT_set_affine_coordinates_GFp(GROUP, point, P.X, P.Y, NULL);
+    EC_POINT_set_affine_coordinates(GROUP, point, P.X, P.Y, nullptr);
 
-    int result = EC_POINT_is_on_curve(GROUP, point, NULL);
+    int result = EC_POINT_is_on_curve(GROUP, point, nullptr);
 
     EC_POINT_free(point);
     return result == 1;
@@ -49,15 +49,15 @@ ECPoint add_EC_points(const ECPoint  * first_point, const ECPoint  * second_poin
     result.Y = BN_new();
 
     EC_POINT * pointA = EC_POINT_new(GROUP);
-    EC_POINT_set_affine_coordinates_GFp(GROUP, pointA, first_point->X, first_point->Y, NULL);
+    EC_POINT_set_affine_coordinates(GROUP, pointA, first_point->X, first_point->Y, nullptr);
 
     EC_POINT * pointB = EC_POINT_new(GROUP);
-    EC_POINT_set_affine_coordinates_GFp(GROUP, pointB, second_point->X, second_point->Y, NULL);
+    EC_POINT_set_affine_coordinates(GROUP, pointB, second_point->X, second_point->Y, nullptr);
 
     EC_POINT * result_point = EC_POINT_new(GROUP);
 
-    EC_POINT_add(GROUP, result_point ,pointB, pointA, NULL);
-    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, NULL)) {
+    EC_POINT_add(GROUP, result_point ,pointB, pointA, nullptr);
+    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, nullptr)) {
         std::cerr << "Failed to get affine coordinates from result" << std::endl;
         BN_free(result.X);
         BN_free(result.Y);
@@ -74,11 +74,11 @@ ECPoint double_EC_point(const ECPoint &a) {
     result.Y = BN_new();
 
     EC_POINT * doubled_point = EC_POINT_new(GROUP);
-    EC_POINT_set_affine_coordinates_GFp(GROUP, doubled_point, a.X, a.Y, NULL);
+    EC_POINT_set_affine_coordinates(GROUP, doubled_point, a.X, a.Y, nullptr);
 
     EC_POINT * result_point = EC_POINT_new(GROUP);
-    EC_POINT_dbl(GROUP, result_point, doubled_point, NULL);
-    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, NULL)) {
+    EC_POINT_dbl(GROUP, result_point, doubled_point, nullptr);
+    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, nullptr)) {
         std::cerr << "Failed to get affine coordinates from result" << std::endl;
         BN_free(result.X);
         BN_free(result.Y);
@@ -96,10 +96,10 @@ ECPoint scalar_mult(const BIGNUM * k, const ECPoint &a) {
 
     EC_POINT * pointA = EC_POINT_new(GROUP);
     EC_POINT * result_point = EC_POINT_new(GROUP);
-    EC_POINT_set_affine_coordinates_GFp(GROUP, pointA, a.X, a.Y, NULL);
-    EC_POINT_mul(GROUP, result_point, NULL, pointA, k, NULL);
+    EC_POINT_set_affine_coordinates_GFp(GROUP, pointA, a.X, a.Y, nullptr);
+    EC_POINT_mul(GROUP, result_point, nullptr, pointA, k, nullptr);
 
-    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, NULL)) {
+    if (!EC_POINT_get_affine_coordinates_GFp(GROUP, result_point, result.X, result.Y, nullptr)) {
         BN_free(result.X);
         BN_free(result.Y);
         EC_POINT_free(pointA);
@@ -150,7 +150,6 @@ int main() {
 
         if(are_EC_points_equal(H2, H4)) std::cout<<"These values are similar";
         else std::cout<<"These values aren't similar";
-
     }
     return 0;
 }
