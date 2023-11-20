@@ -131,6 +131,10 @@ void print_EC_point(ECPoint point) {
     std::cout<<"Y: "<<BN_bn2dec(point.Y)<<std::endl;
 }
 
+bool are_EC_points_equal(const ECPoint &point1, const ECPoint &point2) {
+    return (BN_cmp(point1.X, point2.X) == 0) && (BN_cmp(point1.Y, point2.Y) == 0);
+}
+
 
 int main() {
     BIGNUM *k = BN_new();
@@ -143,6 +147,10 @@ int main() {
         ECPoint H2 = scalar_mult(k, H1);
         ECPoint H3 = scalar_mult(k, *G);
         ECPoint H4 = scalar_mult(d, H3);
+
+        if(are_EC_points_equal(H2, H4)) std::cout<<"These values are similar";
+        else std::cout<<"These values aren't similar";
+
     }
     return 0;
 }
